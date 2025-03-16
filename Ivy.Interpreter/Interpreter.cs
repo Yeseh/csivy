@@ -1,6 +1,6 @@
 namespace Ivy.Interpreter;
 
-public ref struct Interpreter
+public class Interpreter
 {
     private Scanner _scanner;
 

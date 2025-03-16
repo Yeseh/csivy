@@ -2,7 +2,7 @@
 
 public static class Data 
 {
-    public static Dictionary<string, TokenType> KeyWords = new()
+    private static Dictionary<string, TokenType> KeyWords = new()
     {
         ["if"] = TokenType.keyword_if,
         ["else"] = TokenType.keyword_else,
@@ -11,4 +11,7 @@ public static class Data
         ["var"] = TokenType.keyword_var,
         ["fn"] = TokenType.keyword_fn,    
     };
+
+    public static Dictionary<string, TokenType>.AlternateLookup<ReadOnlySpan<char>> 
+        KeywordLookup => KeyWords.GetAlternateLookup<ReadOnlySpan<char>>();
 }

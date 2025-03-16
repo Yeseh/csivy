@@ -1,6 +1,9 @@
 ﻿namespace Ivy.Interpreter;
 
-public struct Scanner(ReadOnlySpan<char> source)
+using System.Runtime.ConstrainedExecution;
+using static Data;
+
+public class Scanner(ReadOnlySpan<char> source)
 {
     public enum State : byte
     {
@@ -26,7 +29,7 @@ public struct Scanner(ReadOnlySpan<char> source)
     // Scanner takes ownership of the source buffer
     private readonly char[] _src = source.ToArray();
     private readonly int _len = source.Length;
-    
+
     private State _state;
     private int _pos = 0;
     private int _line = 0;
@@ -37,7 +40,7 @@ public struct Scanner(ReadOnlySpan<char> source)
         _state = State.start;
         Token token = new Token(_pos, _pos, _line, TokenType.eof);
 
-        while (true)
+        while (_pos < _len)
         {
             var c =_src[_pos];
             switch(_state) {
@@ -161,8 +164,8 @@ public struct Scanner(ReadOnlySpan<char> source)
                         // Skip through letters
                         case var _ when char.IsLetter(c) || c == '_': _pos += 1; break;
                         default:
-                            var lexeme = _src[token.Start.._pos].ToString();
-                            var isKeyword = Data.KeyWords.TryGetValue(lexeme, out var keyword);
+                            var lexeme = _src[token.Start.._pos];
+                            var isKeyword = KeywordLookup.TryGetValue(lexeme, out var keyword);
                             if (isKeyword)
                             {
                                 token.Type = keyword;
@@ -177,16 +180,15 @@ public struct Scanner(ReadOnlySpan<char> source)
                     {
                         case '!': _state = State.comment_multiline; _pos += 1; break;
                         case '\n': _state = State.start; _pos += 1; _line += 1; break;
-                        default: _state = State.comment_line; break; 
-                            
                         case var _ when char.IsWhiteSpace(c): _pos += 1; break;
+                        default: _state = State.comment_line; break; 
                     }
                     break;
                 
                 case State.comment_line:
                     switch (c)
                     {
-                        case var _ when c.ToString() == Environment.NewLine:
+                        case var _ when IsNewLine():
                             _state = State.start;
                             token.Start = _pos + 1;
                             _line += 1;
@@ -233,6 +235,20 @@ public struct Scanner(ReadOnlySpan<char> source)
         
         token.End = _pos;
         return token; 
+    }
+
+    public bool IsNewLine()
+    {
+        var cur = _src[_pos];
+        var isNewline = cur == '\n'
+            || cur == '\r' && Peek() == '\n';
+
+        if (!isNewline) 
+        {
+            throw new Exception("Invalid newline detected!");
+        }
+
+        return true;
     }
     
     public char? Peek() => _pos + 1 < _len ? _src[_pos] : null;
