@@ -11,7 +11,7 @@ public class Interpreter
 
     public InterpreterError? Execute()
     {
-        var cur = _scanner.GetNextToken();
+        var cur = _scanner.ScanToken();
 
         while (true)
         {

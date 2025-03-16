@@ -19,7 +19,7 @@ public enum TokenType : byte
     bang,
     colon,
     quote,
-    double_quote,
+    quote_double,
     slash_forward,
 
     identifier,
