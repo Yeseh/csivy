@@ -1,0 +1,4 @@
+﻿fn (bla) {
+    var blo = "bla"
+    var blc = 0.123
+}

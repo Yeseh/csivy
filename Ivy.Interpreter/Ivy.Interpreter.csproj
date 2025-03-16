@@ -8,4 +8,10 @@
     <RootNamespace>Ivy.Interpreter</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Update="Ivy\main.ivy">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

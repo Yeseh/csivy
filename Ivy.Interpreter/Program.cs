@@ -3,27 +3,18 @@ using Ivy.Interpreter;
 
 ReadOnlySpan<char> source;
 
-if (args.Length > 1) 
-{
-    Console.WriteLine("Usage: csivy [script]");
-    return 64;
-}
-
+var mainIvy = @"./Ivy/main.ivy";
 source = args.Length == 1 
     ? File.ReadAllText(args[1]).AsSpan()
-    : Console.ReadLine().AsSpan();
+    : File.ReadAllText(mainIvy).AsSpan(); 
 
-var error = new Interpreter(source).Execute();
-if (error.HasValue)
+var tokens = new Scanner(source).ScanTokens();
+foreach (var token in tokens)
 {
-    Console.WriteLine($"Error: {error.Value.Message}");
-    return 1;
+    Console.WriteLine(token);
 }
 
-
 Console.WriteLine("Done!");
-return 0;
-
 
 public partial class Program { }
 

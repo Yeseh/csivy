@@ -12,22 +12,19 @@ public class Scanner(ReadOnlySpan<char> source)
     private readonly char[] _src = source.ToArray();
     private readonly int _len = source.Length;
 
+    private List<Token> tokens = new(source.Length / 2);
     private int _start = 0;
     private int _pos = 0;
     private int _line = 1;
 
     public List<Token> ScanTokens()
     {
-        var estimated = _len / 2; // Estimate 1 token per 2 source bytes
-        var tokens = new List<Token>(estimated);
-
-        while (!IsAtEnd()) { tokens.Add(ScanToken()); }
-        
+        while (!IsAtEnd()) { ScanToken(); }
         tokens.Add(new Token(_pos, _pos, _line, eof));
         return tokens;
     }
     
-    public Token ScanToken()
+    public void ScanToken()
     {
         _start = _pos;
         var c = _src[_pos++];
@@ -129,11 +126,14 @@ public class Scanner(ReadOnlySpan<char> source)
                 token.Type = invalid;
                 token.End = _pos;
                 _pos += 1;
-                return token;
+                break;
         }
-        
-        token.End = _pos;
-        return token;
+
+        if (token.Type != eof)
+        {
+            token.End = _pos;
+            tokens.Add(token);
+        }
     }
     
     
